@@ -121,12 +121,11 @@ public class MainActivity extends AppCompatActivity
                 firstTimeYolo = true;
                 //opencv DNN.readNetFromDarknet을 사용하기 위해 string 인자를 두개(cfg,weight) 넘겨줘야 합니다.
                 //getpath라는 임의의 함수를 이용하여 filepath를 string으로 저장합니다.
-                String tinyYoloCfg = getPath("yolov3-tiny.cfg",this) ;
-                String tinyYoloWeights = getPath("yolov3-tiny.weights",this);
-
-
+                String tinyYoloCfg = getPath("yolov3-dongkeun.cfg",this) ;
+                String tinyYoloWeights = getPath("yolov3-dongkeun_last.weights",this);
                 //opencv에서 제공하는 Dnn모델(Deep Neural Network)을 이용
                 tinyYolo = Dnn.readNetFromDarknet(tinyYoloCfg, tinyYoloWeights);
+
                 System.out.println(tinyYolo.getLayerNames());
             }
 
@@ -170,7 +169,7 @@ public class MainActivity extends AppCompatActivity
         mOpenCvCameraView = findViewById(R.id.activity_surface_view);
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
         mOpenCvCameraView.setCvCameraViewListener(this);
-        mOpenCvCameraView.setCameraIndex(0); // front-camera(1),  back-camera(0)
+        mOpenCvCameraView.setCameraIndex(1); // front-camera(1),  back-camera(0)
         //참고 https://recipes4dev.tistory.com/61
         //유저에게 입력을 받아 이를 string으로 변환하여 저장
         //label 이름 저장을 위해 textview를 활용
@@ -231,11 +230,11 @@ public class MainActivity extends AppCompatActivity
 
         if (startYolo == true) {
 
-            String tinyYoloCfg = getPath("yolov3-tiny.cfg",this) ;
-            String tinyYoloWeights = getPath("yolov3-tiny.weights",this);
-
+            String tinyYoloCfg = getPath("yolov3-dongkeun.cfg",this) ;
+            String tinyYoloWeights = getPath("yolov3-dongkeun_last.weights",this);
 
             tinyYolo = Dnn.readNetFromDarknet(tinyYoloCfg, tinyYoloWeights);
+
 
         }
     }
@@ -291,28 +290,28 @@ public class MainActivity extends AppCompatActivity
 
             //blob이란 input image가  mean subtraction, normalizing, and channel swapping을 거치고 난 후를 말합니다.
             //Dnn.blobFromImage를 이용하여 이미지 픽셀의 평균값을 계산하여 제외하고 스케일링을 하고 또 채널 스왑(RED와 BLUE)을 진행합니다.
-            //현재는 128 x 128로 스케일링하고 채널 스왑은 하지 않습니다. 생성된 4-dimensional blob 값을 imageBlob에 할당합니다.
+            //현재는 192 x 192로 스케일링하고 채널 스왑은 하지 않습니다. 생성된 4-dimensional blob 값을 imageBlob에 할당합니다.
             //www.pyimagesearch.com/2017/11/06/deep-learning-opencvs-blobfromimage-works 참고하였습니다.
-            Mat imageBlob = Dnn.blobFromImage(frame, 0.00392, new Size(416, 416), new Scalar(0, 0, 0),/*swapRB*/false, /*crop*/false);
+            Mat imageBlob = Dnn.blobFromImage(frame, 0.00392, new Size(192, 192), new Scalar(0, 0, 0),/*swapRB*/false, /*crop*/false);
 
 
             tinyYolo.setInput(imageBlob);
             System.out.println("BLBO PASS");
             //cfg파일에서 yolo layer number를 확인하여 이를 순전파에 넣어줍니다.
             //yolov3의 경우 yolo layer가 3개임으로 initialCapacity를 3으로 줍니다.
-            //java.util.List<Mat> result = new java.util.ArrayList<Mat>(3);
-            List<Mat> result = new ArrayList<Mat>(2);
+             java.util.List<Mat> result = new java.util.ArrayList<Mat>(3);
+            //List<Mat> result = new ArrayList<Mat>(2);
 
             List<String> outBlobNames = new ArrayList<>();
 
             //yolov3
-            //outBlobNames.add(0, "yolo_82");
-            //outBlobNames.add(1, "yolo_94");
-            //outBlobNames.add(2, "yolo_106");
+            outBlobNames.add(0, "yolo_82");
+            outBlobNames.add(1, "yolo_94");
+            outBlobNames.add(2, "yolo_106");
 
             //yolov3-tiny
-            outBlobNames.add(0, "yolo_16");
-            outBlobNames.add(1, "yolo_23");
+//            outBlobNames.add(0, "yolo_16");
+//            outBlobNames.add(1, "yolo_23");
 
             //vlov4-tiny
             //outBlobNames.add(0, "yolo_30");
@@ -387,8 +386,8 @@ public class MainActivity extends AppCompatActivity
                     float conf = confs.get(idx);
 
 
-                    List<String> cocoNames = Arrays.asList("a person", "a bicycle", "a motorbike", "an airplane", "a bus", "a train", "a truck", "a boat", "a traffic light", "a fire hydrant", "a stop sign", "a parking meter", "a car", "a bench", "a bird", "a cat", "a dog", "a horse", "a sheep", "a cow", "an elephant", "a bear", "a zebra", "a giraffe", "a backpack", "an umbrella", "a handbag", "a tie", "a suitcase", "a frisbee", "skis", "a snowboard", "a sports ball", "a kite", "a baseball bat", "a baseball glove", "a skateboard", "a surfboard", "a tennis racket", "a bottle", "a wine glass", "a cup", "a fork", "a knife", "a spoon", "a bowl", "a banana", "an apple", "a sandwich", "an orange", "broccoli", "a carrot", "a hot dog", "a pizza", "a doughnut", "a cake", "a chair", "a sofa", "a potted plant", "a bed", "a dining table", "a toilet", "a TV monitor", "a laptop", "a computer mouse", "a remote control", "a keyboard", "a cell phone", "a microwave", "an oven", "a toaster", "a sink", "a refrigerator", "a book", "a clock", "a vase", "a pair of scissors", "a teddy bear", "a hair drier", "a toothbrush");
-
+                    //List<String> cocoNames = Arrays.asList("a person", "a bicycle", "a motorbike", "an airplane", "a bus", "a train", "a truck", "a boat", "a traffic light", "a fire hydrant", "a stop sign", "a parking meter", "a car", "a bench", "a bird", "a cat", "a dog", "a horse", "a sheep", "a cow", "an elephant", "a bear", "a zebra", "a giraffe", "a backpack", "an umbrella", "a handbag", "a tie", "a suitcase", "a frisbee", "skis", "a snowboard", "a sports ball", "a kite", "a baseball bat", "a baseball glove", "a skateboard", "a surfboard", "a tennis racket", "a bottle", "a wine glass", "a cup", "a fork", "a knife", "a spoon", "a bowl", "a banana", "an apple", "a sandwich", "an orange", "broccoli", "a carrot", "a hot dog", "a pizza", "a doughnut", "a cake", "a chair", "a sofa", "a potted plant", "a bed", "a dining table", "a toilet", "a TV monitor", "a laptop", "a computer mouse", "a remote control", "a keyboard", "a cell phone", "a microwave", "an oven", "a toaster", "a sink", "a refrigerator", "a book", "a clock", "a vase", "a pair of scissors", "a teddy bear", "a hair drier", "a toothbrush");
+                    List<String> cocoNames = Arrays.asList("wearing mask");
 
                     intConf = (int) (conf * 100);
 
