@@ -1,31 +1,26 @@
 package com.example.sunday;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.Manifest;
-import android.app.Activity;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.hardware.Camera;
-import android.os.Bundle;
-import android.annotation.TargetApi;
-import android.content.pm.PackageManager;
 import android.os.Build;
-import android.os.Handler;
-import android.os.Message;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
@@ -38,7 +33,6 @@ import org.opencv.core.Mat;
 import org.opencv.core.MatOfFloat;
 import org.opencv.core.MatOfInt;
 import org.opencv.core.MatOfRect;
-import org.opencv.core.MatOfRect2d;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
@@ -85,14 +79,11 @@ public class MainActivity extends AppCompatActivity
     boolean firstTimeYolo = false;
     Net tinyYolo;
     private Button capture;
-    private Button enter2;
     private int intConf;
-    private String strText;
-    private EditText editText2;
     //카메라 촬영용 flag
     //flag_camera가 1일 경우 화면 캡쳐, 0일 경우 화면캡쳐 중지
     private int flag_camera = 0;
-    //flag_rotate가 1일 경우 세로 모드, 0일 경우 가로모드
+    //flag_rotate가 1일 경우 가로 모드, 0일 경우 가로모드
     private int flag_rotate = 0;
 
     //참고 https://devfarming.tistory.com/3
@@ -127,8 +118,9 @@ public class MainActivity extends AppCompatActivity
                 firstTimeYolo = true;
                 //opencv DNN.readNetFromDarknet을 사용하기 위해 string 인자를 두개(cfg,weight) 넘겨줘야 합니다.
                 //getpath라는 임의의 함수를 이용하여 filepath를 string으로 저장합니다.
-                String tinyYoloCfg = getPath("yolov3-tiny.cfg",this) ;
-                String tinyYoloWeights = getPath("yolov3-tiny.weights",this);
+                String tinyYoloCfg = getPath("yolov3-dongkeun.cfg",this) ;
+                String tinyYoloWeights = getPath("yolov3-dongkeun_last.weights",this);
+
 
 
                 //opencv에서 제공하는 Dnn모델(Deep Neural Network)을 이용
@@ -160,7 +152,23 @@ public class MainActivity extends AppCompatActivity
             }
         }
     };
+    //가로 세로 변환시 해당 모드를 팝업 메시지로 띄워주고 flag변수에 값을 할당한다
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
 
+        if(newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            Toast.makeText(this, "세로모드", Toast.LENGTH_SHORT).show();
+            flag_rotate=0;
+        }
+
+        if(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            Toast.makeText(this, "가로모드", Toast.LENGTH_SHORT).show();
+            flag_rotate=1;
+        }
+
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -238,8 +246,8 @@ public class MainActivity extends AppCompatActivity
 
         if (startYolo == true) {
 
-            String tinyYoloCfg = getPath("yolov3-tiny.cfg",this) ;
-            String tinyYoloWeights = getPath("yolov3-tiny.weights",this);
+            String tinyYoloCfg = getPath("yolov3-dongkeun.cfg",this) ;
+            String tinyYoloWeights = getPath("yolov3-dongkeun_last.weights",this);
 
 
             tinyYolo = Dnn.readNetFromDarknet(tinyYoloCfg, tinyYoloWeights);
@@ -260,16 +268,13 @@ public class MainActivity extends AppCompatActivity
         //Mat frame = inputFrame.rgba();
         Mat frame2 = frame.clone(); // 프레임을 저장하기위한 변수
 
-        /*
-        주석 처리한 이 부분은 카메라 회전을 지원하고 싶어서 작성하였으나
-        화면을 세로로 고정하고 full screen으로 하여 어플상에 바를 안보이게 하도록 수정
+        //세로모드에서 frame회전
         if (flag_rotate == 0) {
             Mat mRgabT = frame.t();
             Core.flip(frame.t(), mRgabT, 1);
             Imgproc.resize(mRgabT, mRgabT, frame.size());
             frame = mRgabT;
         }
-        */
         //Mat to Bitmap으로 변환
         Bitmap bmp = null;
         //화면 가로,세로 길이 받아오기
@@ -301,7 +306,7 @@ public class MainActivity extends AppCompatActivity
             //Dnn.blobFromImage를 이용하여 이미지 픽셀의 평균값을 계산하여 제외하고 스케일링을 하고 또 채널 스왑(RED와 BLUE)을 진행합니다.
             //현재는 128 x 128로 스케일링하고 채널 스왑은 하지 않습니다. 생성된 4-dimensional blob 값을 imageBlob에 할당합니다.
             //www.pyimagesearch.com/2017/11/06/deep-learning-opencvs-blobfromimage-works 참고하였습니다.
-            Mat imageBlob = Dnn.blobFromImage(frame, 0.00392, new Size(416, 416), new Scalar(0, 0, 0),/*swapRB*/false, /*crop*/false);
+            Mat imageBlob = Dnn.blobFromImage(frame, 0.00392, new Size(128, 128), new Scalar(0, 0, 0),/*swapRB*/false, /*crop*/false);
 
 
             tinyYolo.setInput(imageBlob);
@@ -309,18 +314,18 @@ public class MainActivity extends AppCompatActivity
             //cfg파일에서 yolo layer number를 확인하여 이를 순전파에 넣어줍니다.
             //yolov3의 경우 yolo layer가 3개임으로 initialCapacity를 3으로 줍니다.
             //java.util.List<Mat> result = new java.util.ArrayList<Mat>(3);
-            List<Mat> result = new ArrayList<Mat>(2);
+            List<Mat> result = new ArrayList<Mat>(3);
 
             List<String> outBlobNames = new ArrayList<>();
 
             //yolov3
-            //outBlobNames.add(0, "yolo_82");
-            //outBlobNames.add(1, "yolo_94");
-            //outBlobNames.add(2, "yolo_106");
+            outBlobNames.add(0, "yolo_82");
+            outBlobNames.add(1, "yolo_94");
+            outBlobNames.add(2, "yolo_106");
 
             //yolov3-tiny
-            outBlobNames.add(0, "yolo_16");
-            outBlobNames.add(1, "yolo_23");
+//            outBlobNames.add(0, "yolo_16");
+//            outBlobNames.add(1, "yolo_23");
 
             //vlov4-tiny
             //outBlobNames.add(0, "yolo_30");
@@ -426,12 +431,15 @@ public class MainActivity extends AppCompatActivity
                         Toast.makeText(MainActivity.this, "화면을 저장합니다", Toast.LENGTH_SHORT).show();
                     }
                 });
-                MediaStore.Images.Media.insertImage(getContentResolver(), bmp, strText + "_" + time_Q, "IMAGE");
+                MediaStore.Images.Media.insertImage(getContentResolver(), bmp, "time_"+ time_Q, "IMAGE");
                 flag_camera = 0;
 
                 //두 번째 화면으로 전환
+            boolean capture1 = capture.isClickable();
+            if (startYolo == true && capture1 == true) {
                 Intent intent = new Intent(MainActivity.this, user_texting.class);
                 startActivity(intent);
+            }
                 //아래는 원래 있었던 코드.
                 //메인쓰레드 밖에서 UI변경을 요구함으로 다음과 같이 runOnUiThread 메소드를 호출하여 출력합니다.
                 /*

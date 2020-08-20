@@ -27,15 +27,6 @@ android {
         }
     }
 
-    sourceSets {
-        main {
-            jniLibs.srcDirs = [
-                    "src/main/cppLibs/dlib/lib",
-                    "src/main/cppLibs/opencv"
-            ]
-        }
-    }
-
     externalNativeBuild {
         cmake {
             path "src/main/cpp/CMakeLists.txt"

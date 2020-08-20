@@ -5,8 +5,8 @@
 5    android:versionName="3.4.5" > <!-- <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="21" /> -->
 6    <uses-sdk
 7        android:minSdkVersion="14"
-7-->C:\Users\Jaeseo\Desktop\twenty\OpenSW-Team-project-jaeseo\OpenSW-Team-project-jaeseo\opencv\java\AndroidManifest.xml
+7-->C:\Users\12152\Downloads\Android-TensorFlow-Lite-Example-master\sunday\opencv\java\AndroidManifest.xml
 8        android:targetSdkVersion="21" />
-8-->C:\Users\Jaeseo\Desktop\twenty\OpenSW-Team-project-jaeseo\OpenSW-Team-project-jaeseo\opencv\java\AndroidManifest.xml
+8-->C:\Users\12152\Downloads\Android-TensorFlow-Lite-Example-master\sunday\opencv\java\AndroidManifest.xml
 9
 10</manifest>

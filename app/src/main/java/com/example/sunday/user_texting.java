@@ -9,7 +9,6 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -49,41 +48,19 @@ public class user_texting extends Activity {
         //체크박스 체크 여부를 저장한다.
         boolean a1 = sym.isChecked();
         boolean a2 = aboard.isChecked();
-        if (a1 == true) {
-            Sym = "호흡기증상 없음";
-        } else {
-            // '호흡기증상 없음'에 체크하지 않으면 경고메세지를 띄우고 새로고침한다.
-            user_texting.this.runOnUiThread(new Runnable() {
-                public void run() {
-                    Toast.makeText(user_texting.this, "호흡기증상이 있으면 출입할 수 없습니다.", Toast.LENGTH_SHORT).show();
-                    finish();
-                }
-            });
-        }
-        if (a2 == true) {
-            Aboard = "2주 사이 해외 방문 없음";
-        } else {
-            // '2주 사이 해외 방문 없음'에 체크하지 않으면 경고메세지를 띄우고 새로고침한다.
-            user_texting.this.runOnUiThread(new Runnable() {
-                public void run() {
-                    Toast.makeText(user_texting.this, "해외 방문기록이 있으면 출입할 수 없습니다.", Toast.LENGTH_SHORT).show();
-                    finish();
-                }
-            });
-        }
+
         //모든 정보가 잘 입력되면,
-        if ((!Name.isEmpty()) && (Phone.length() == 11) && (!Tempr.isEmpty()) && (!Sym.isEmpty()) && (!Aboard.isEmpty())) {
+        if ((!Name.isEmpty()) && (Phone.length() == 11) && (!Tempr.isEmpty()) && (a1==true) && (a2 == true)) {
             //여기서부터 이제 QR코드 소환!
             //all은 QR코드에 삽입될 데이터.
             all = time + "\n이름: " + Name + "\n전화번호: " + Phone + "\n체온: " + Tempr + "\n" + Sym + "\n" + Aboard;
             Intent intent = new Intent(user_texting.this, makeQRCode.class);
             startActivity(intent);
         } else {
-            //정보가 잘 입력되지 않으면 경고메세지를 띄우고 새로고침한다.
+            //정보가 잘 입력되지 않으면 경고메세지를 띄우고 화면을 넘기지 않는다.
             user_texting.this.runOnUiThread(new Runnable() {
                 public void run() {
                     Toast.makeText(user_texting.this, "입력하신 정보를 다시 확인해주십시오.", Toast.LENGTH_SHORT).show();
-                    finish();
                 }
             });
         }

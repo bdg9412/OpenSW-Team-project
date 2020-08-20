@@ -5,16 +5,15 @@
 
 cmake_minimum_required(VERSION 3.4.1)
 
-# 중요! 다운로드 하시면 pathOPENCV와 pathPROJECT는 다운로드 폴더에 맞게 변경하셔야 합니다.
-set(pathOPENCV C:/Users/Jaeseo/Desktop/twenty/OpenSW-Team-project-jaeseo/OpenSW-Team-project-jaeseo/opencv/native/jni/include/)
-set(pathPROJECT C:/Users/Jaeseo/Desktop/twenty/OpenSW-Team-project-jaeseo/OpenSW-Team-project-jaeseo)
+
+set(pathOPENCV C:/Users/12152/Downloads/opencv-3.4.5-android-sdk/OpenCV-android-sdk)
+set(pathPROJECT C:/Users/12152/Downloads/Android-TensorFlow-Lite-Example-master/sunday)
 set(pathLIBOPENCV_JAVA ${pathPROJECT}/app/src/main/JniLibs/${ANDROID_ABI}/libopencv_java3.so)
 
 set(CMAKE_VERBOSE_MAKEFILE on)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
 
-# 중요! 다운로드 하시면 디렉토리를 다운로드 폴더에 맞게 변경하셔야 합니다.
-include_directories(${pathOPENCV}/)
+include_directories(${pathOPENCV}/sdk/native/jni/include)
 
 
 # Creates and names a library, sets it as either STATIC
@@ -29,7 +28,7 @@ add_library( # Sets the name of the library.
         SHARED
 
         # Provides a relative path to your source file(s).
-        native-lib.cpp)
+        C:/Users/12152/Downloads/Android-TensorFlow-Lite-Example-master/sunday/app/src/main/cpp/native-lib.cpp)
 
 # Searches for a specified prebuilt library and stores the path as a
 # variable. Because CMake includes system libraries in the search path by
