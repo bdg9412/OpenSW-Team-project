@@ -209,6 +209,7 @@ public class MainActivity extends AppCompatActivity
                 flag_camera = 1;
             }
         });
+        Toast.makeText(MainActivity.this,"원할한 인식을 위하여 가로모드로 변경해주세요",Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -266,12 +267,12 @@ public class MainActivity extends AppCompatActivity
         //inputframe중 rgba format을 프레임변수에 할당
         Mat frame = inputFrame.gray();
         //Mat frame = inputFrame.rgba();
-        Mat frame2 = frame.clone(); // 프레임을 저장하기위한 변수
+        Mat frame2 = frame.clone(); // 프레임을 저장 및 객체검출을 위한 프레임 변수
 
         //세로모드에서 frame회전
         if (flag_rotate == 0) {
             Mat mRgabT = frame.t();
-            Core.flip(frame.t(), mRgabT, 1);
+            Core.flip(frame.t(), mRgabT, 0);
             Imgproc.resize(mRgabT, mRgabT, frame.size());
             frame = mRgabT;
         }
@@ -296,7 +297,7 @@ public class MainActivity extends AppCompatActivity
         //YOLO 버튼 클릭으로 startYolo가 true로 바뀌었을 때
         if (startYolo == true) {
             //Imgproc을 이용해 이미지 프로세싱을 한다. rgba를 rgb로 컬러체계변환
-            Imgproc.cvtColor(frame, frame, Imgproc.COLOR_GRAY2RGB);
+            Imgproc.cvtColor(frame2, frame2, Imgproc.COLOR_GRAY2RGB);
 
             //출처 https://stackoverflow.com/questions/39411160/how-to-save-opencv-resultant-images-in-android-automatically
             //bmp파일을 이미지 폴더에 저장, 저장경로(내장메모리/Pictures)
@@ -306,7 +307,7 @@ public class MainActivity extends AppCompatActivity
             //Dnn.blobFromImage를 이용하여 이미지 픽셀의 평균값을 계산하여 제외하고 스케일링을 하고 또 채널 스왑(RED와 BLUE)을 진행합니다.
             //현재는 128 x 128로 스케일링하고 채널 스왑은 하지 않습니다. 생성된 4-dimensional blob 값을 imageBlob에 할당합니다.
             //www.pyimagesearch.com/2017/11/06/deep-learning-opencvs-blobfromimage-works 참고하였습니다.
-            Mat imageBlob = Dnn.blobFromImage(frame, 0.00392, new Size(128, 128), new Scalar(0, 0, 0),/*swapRB*/false, /*crop*/false);
+            Mat imageBlob = Dnn.blobFromImage(frame2, 0.00392, new Size(128, 128), new Scalar(0, 0, 0),/*swapRB*/false, /*crop*/false);
 
 
             tinyYolo.setInput(imageBlob);
@@ -400,8 +401,8 @@ public class MainActivity extends AppCompatActivity
                     float conf = confs.get(idx);
 
 
-                    List<String> cocoNames = Arrays.asList("a person", "a bicycle", "a motorbike", "an airplane", "a bus", "a train", "a truck", "a boat", "a traffic light", "a fire hydrant", "a stop sign", "a parking meter", "a car", "a bench", "a bird", "a cat", "a dog", "a horse", "a sheep", "a cow", "an elephant", "a bear", "a zebra", "a giraffe", "a backpack", "an umbrella", "a handbag", "a tie", "a suitcase", "a frisbee", "skis", "a snowboard", "a sports ball", "a kite", "a baseball bat", "a baseball glove", "a skateboard", "a surfboard", "a tennis racket", "a bottle", "a wine glass", "a cup", "a fork", "a knife", "a spoon", "a bowl", "a banana", "an apple", "a sandwich", "an orange", "broccoli", "a carrot", "a hot dog", "a pizza", "a doughnut", "a cake", "a chair", "a sofa", "a potted plant", "a bed", "a dining table", "a toilet", "a TV monitor", "a laptop", "a computer mouse", "a remote control", "a keyboard", "a cell phone", "a microwave", "an oven", "a toaster", "a sink", "a refrigerator", "a book", "a clock", "a vase", "a pair of scissors", "a teddy bear", "a hair drier", "a toothbrush");
-
+                    //List<String> cocoNames = Arrays.asList("a person", "a bicycle", "a motorbike", "an airplane", "a bus", "a train", "a truck", "a boat", "a traffic light", "a fire hydrant", "a stop sign", "a parking meter", "a car", "a bench", "a bird", "a cat", "a dog", "a horse", "a sheep", "a cow", "an elephant", "a bear", "a zebra", "a giraffe", "a backpack", "an umbrella", "a handbag", "a tie", "a suitcase", "a frisbee", "skis", "a snowboard", "a sports ball", "a kite", "a baseball bat", "a baseball glove", "a skateboard", "a surfboard", "a tennis racket", "a bottle", "a wine glass", "a cup", "a fork", "a knife", "a spoon", "a bowl", "a banana", "an apple", "a sandwich", "an orange", "broccoli", "a carrot", "a hot dog", "a pizza", "a doughnut", "a cake", "a chair", "a sofa", "a potted plant", "a bed", "a dining table", "a toilet", "a TV monitor", "a laptop", "a computer mouse", "a remote control", "a keyboard", "a cell phone", "a microwave", "an oven", "a toaster", "a sink", "a refrigerator", "a book", "a clock", "a vase", "a pair of scissors", "a teddy bear", "a hair drier", "a toothbrush");
+                    List<String> cocoNames = Arrays.asList("wear a mask");
 
                     intConf = (int) (conf * 100);
 
